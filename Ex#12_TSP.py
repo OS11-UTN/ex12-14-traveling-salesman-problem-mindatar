@@ -12,8 +12,10 @@ NN =np.zeros((x,x))
 
 for i in range( len (NN)):
     for j in range ( len (NN)):
-        if i < j :
+        if i != j :
             NN[i][j]= 1
+
+print (" matriz nodo-nod" , NN)
 
 Aeq, arc_idxs = nn2na(NN)
 AeqT = np.zeros((2*x,len(Aeq[0])))
@@ -30,9 +32,10 @@ for i in range( len(Aeq)):
         if Aeq[i][j] == 1 :
             AeqT[i][j] = 1
             C[i] = random.randint(0,20)
-        elif  Aeq[i][j] == -1 :
-            AeqT[i+ 5][j]= 1
-            C[i+5] = random.randint(0, 20)
+        else :
+            if  Aeq[i][j] == -1 :
+                AeqT[i+ 5][j]= 1
+                C[j] = random.randint(0, 20)
 
 #  Matriz AeqT , tendria lo que en la práctica es Aeq1 y Aeq2
 #
@@ -51,7 +54,7 @@ vectroq = np.zeros(len(AeqT))
 for i in range(len(vectroq)):
     vectroq[i]= 1
 
-beq = vectroq
+beq = np.array(vectroq)
 
 print ( "vector b ", len(beq))
 print ( "vector b ", beq)
