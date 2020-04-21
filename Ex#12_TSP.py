@@ -8,36 +8,48 @@ import random
 # Defino cantidad de sitios ó nodos.
 x= 6
 # Nodos 6 x 6
-NN =np.zeros((x,x))
+NI =np.zeros((x,x))
 
-for i in range( len (NN)):
-    for j in range ( len (NN)):
+for i in range( len (NI)):
+    for j in range ( len (NI)):
         if i != j :
-            NN[i][j]= 1
+            NI[i][j]= 1
 
-print (" matriz nodo-nod" , NN)
+print (" matriz nodo-nod" , NI)
+
+NN= np.array(NI)
 
 Aeq, arc_idxs = nn2na(NN)
 AeqT = np.zeros((2*x,len(Aeq[0])))
 
-
-
 # Inicializo del Vector de distancias C entre nodos.
-C = np.zeros(len(Aeq[0]))
-# formateo la AeqT
+C = []# formateo la AeqT
 # voy a rellenar la AeqT , con los 1  y con los -1 , en cada posición
 
 for i in range( len(Aeq)):
+
     for j in range(len(Aeq[0])):
-        if Aeq[i][j] == 1 :
+        if Aeq[i][j] == 1 and j > i :
             AeqT[i][j] = 1
-            C[i] = random.randint(0,20)
+
+
         else :
             if  Aeq[i][j] == -1 :
                 AeqT[i+ 5][j]= 1
-                C[j] = random.randint(0, 20)
 
-#  Matriz AeqT , tendria lo que en la práctica es Aeq1 y Aeq2
+# lleno el vector C
+for i in range( len(NI)):
+
+    for j in range(len(NI)):
+        if NI[i][j] ==  1 and j > i  :
+            C.append(random.randint(1,20))
+
+        #  Matriz AeqT , tendria lo que en la práctica es Aeq1 y Aeq2
+
+## Replico los valores cambiados en  C , para tener el Vector C con costos con dim igual a Arcos.
+for i in range ( len(C)):
+    C.append(C[i])
+print ( "primera corrida ", C)
 #
 #
 # DATA MANIPULATION:
@@ -56,13 +68,8 @@ for i in range(len(vectroq)):
 
 beq = np.array(vectroq)
 
-print ( "vector b ", len(beq))
-print ( "vector b ", beq)
-print ( "verctor c ", C)
-
-print( "matriz Aeq", Aeq)
 print ( "matriz total ", AeqT)
-
+print ( "beq ....; ", beq )
 #
 #c : es el vector de pesos o coeficientes de la funcion costo.
 # A_ub: es la matriz de coeficientes para el sistema de restricciones “menos que”.
