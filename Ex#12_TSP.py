@@ -2,10 +2,24 @@ import numpy as np
 from scipy.optimize import linprog
 from basic_utils import nn2na, get_usage_string, get_min_cut, get_selected_arcs
 import random
+#from graph.Graph import Graph
+
+# Importamos librerarias para ploteo de Grafos.
 # IMPORT THE DATA:
 # TSP con algoritmo FMC ( flujo mínimo costo )
 #
 # Defino cantidad de sitios ó nodos.
+'''sources = [1, 2, 3, 0, 5, 1, 1, 3]
+   targets = [0, 0, 0, 5, 0, 2, 3, 1]
+   weights = [2, 2, 4, 1, 1, 3, 2, 2]
+
+   graph = Graph(sources, targets, weights)
+
+   graph.print_r()
+   with_weight (boolean)[default=True][opcional]: Si muestra los pesos de cada arco (edge)
+   graph.draw ( with_weight = False )
+   '''
+
 x= 6
 # Nodos 6 x 6
 NI =np.zeros((x,x))
@@ -19,23 +33,20 @@ print (" matriz nodo-nod" , NI)
 
 NN= np.array(NI)
 
-Aeq, arc_idxs = nn2na(NN)
-AeqT = np.zeros((2*x,len(Aeq[0])))
+AeqI, arc_idxs = nn2na(NN)
+
+Aeq1 = (AeqI > 0 ).astype(int)
+Aeq2 = (AeqI < 0 ).astype(int)
+
+print ( " aeq 2 ", Aeq2)
+
+Aeq = np.concatenate([Aeq1, Aeq2],axis= 0 )
+
+print ( "matrix total ", Aeq)
+
 
 # Inicializo del Vector de distancias C entre nodos.
 C = []# formateo la AeqT
-# voy a rellenar la AeqT , con los 1  y con los -1 , en cada posición
-
-for i in range( len(Aeq)):
-
-    for j in range(len(Aeq[0])):
-        if Aeq[i][j] == 1 and j > i :
-            AeqT[i][j] = 1
-
-
-        else :
-            if  Aeq[i][j] == -1 :
-                AeqT[i+ 5][j]= 1
 
 # lleno el vector C
 for i in range( len(NI)):
@@ -44,31 +55,20 @@ for i in range( len(NI)):
         if NI[i][j] ==  1 and j > i  :
             C.append(random.randint(1,20))
 
-        #  Matriz AeqT , tendria lo que en la práctica es Aeq1 y Aeq2
 
 ## Replico los valores cambiados en  C , para tener el Vector C con costos con dim igual a Arcos.
 for i in range ( len(C)):
     C.append(C[i])
 print ( "primera corrida ", C)
-#
-#
-# DATA MANIPULATION:
-#
-#
 
-#for i in range (len(AeqT)):
-#    for j in range(len(AeqT[0])):
-#        bounds
-bounds = tuple([(0,None)]*(len(AeqT[0])))
+bounds = tuple([(0,None)]*(len(C)))
 print ( "limites ", bounds)
 
-vectroq = np.zeros(len(AeqT))
+vectroq = np.zeros(len(Aeq))
 for i in range(len(vectroq)):
     vectroq[i]= 1
 
 beq = np.array(vectroq)
-
-print ( "matriz total ", AeqT)
 print ( "beq ....; ", beq )
 #
 #c : es el vector de pesos o coeficientes de la funcion costo.
@@ -84,14 +84,7 @@ print ( "beq ....; ", beq )
 # x0: valores inciciales para inciar el proceso iterativo
 
 # OPTIMIZE:
-res = linprog(C, A_eq=AeqT, b_eq=beq, bounds=bounds, method='revised simplex' )
+res = linprog(C, A_eq=Aeq, b_eq=beq, bounds=bounds, method='revised simplex' )
 
-# GET THE SOLUTION:
-#selarcs = get_selected_arcs(arc_idys,res.x )
-
-#print('## Results ## ')
-#print ('The row solution  will be : %s ' % res.x)
-#print ('The arcs that make the shortest path will be (from , to ) : %s ' % selarcs)
-#print ('The minimo cantidd de kmstr a caminar  will be : %0.2f ' % res.fun )
 
 print( "solución total ", res)
